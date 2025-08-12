@@ -1,0 +1,18 @@
+[project]
+name = "cortexa-api"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi",
+  "uvicorn[standard]",
+  "sqlalchemy>=2.0",
+  "psycopg[binary]",
+  "passlib[bcrypt]",
+  "pyjwt",
+  "httpx",
+  "pydantic",
+  "python-dotenv",
+]
+
+[tool.uvicorn]
+factory = false

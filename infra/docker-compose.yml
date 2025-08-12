@@ -1,0 +1,44 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_DB: cortexa
+      POSTGRES_USER: cortexa
+      POSTGRES_PASSWORD: cortexa
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cortexa -d cortexa"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      args:
+        API_DIR: apps/api
+    image: infra-api
+    environment:
+      DATABASE_URL: postgresql+psycopg://cortexa:cortexa@db:5432/cortexa
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      JWT_SECRET: devsecret
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+
+  web:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - ../apps/web:/app
+    command: sh -lc "npm i && npm run dev"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
