@@ -11,3 +11,8 @@ node_modules/
 .env
 .env.*
 infra/.env
+
+# env files
+.env
+.env.*
+infra/.env
